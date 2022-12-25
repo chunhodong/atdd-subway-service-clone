@@ -2,7 +2,21 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.7'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'jacoco'
 }
+
+jacoco {
+	toolVersion = '0.8.7'
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		html.enabled true
+		html.destination file("${buildDir}/reports/tests/jacoco.html")
+	}
+}
+
 
 group = 'chunhodong'
 version = '0.0.1-SNAPSHOT'
@@ -35,4 +49,5 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
 }
