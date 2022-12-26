@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
@@ -31,5 +32,10 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> findLine(@PathVariable("id") Long id) {
         return ResponseEntity.ok(lineService.findLine(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<LineResponse>> findLines() {
+        return ResponseEntity.ok(lineService.findLines());
     }
 }

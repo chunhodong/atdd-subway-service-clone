@@ -9,6 +9,9 @@ import chunhodong.subway.line.persistence.LineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class LineService {
@@ -28,5 +31,11 @@ public class LineService {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineException(LineExceptionCode.NONE_EXISTS_LINE));
         return LineResponse.of(line);
+    }
+
+    public List<LineResponse> findLines() {
+        return lineRepository.findAll()
+                .stream()
+                .map(LineResponse::of).collect(Collectors.toList());
     }
 }

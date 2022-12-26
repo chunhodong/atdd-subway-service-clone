@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 public class LineRequest {
+
     private Long id;
     private String name;
     private LineColor color;

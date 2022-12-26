@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
     @CreatedDate
-    private LocalDateTime createdDate;
+    private LocalDateTime createdDate = LocalDateTime.now();
 
     @LastModifiedDate
     private LocalDateTime modifiedDate;

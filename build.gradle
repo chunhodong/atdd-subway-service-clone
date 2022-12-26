@@ -6,17 +6,8 @@ plugins {
 }
 
 jacoco {
-	toolVersion = '0.8.7'
+	toolVersion = '0.8.5'
 }
-
-jacocoTestReport {
-	dependsOn test
-	reports {
-		html.enabled true
-		html.destination file("${buildDir}/reports/tests/jacoco.html")
-	}
-}
-
 
 group = 'chunhodong'
 version = '0.0.1-SNAPSHOT'
@@ -24,6 +15,16 @@ sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()
+}
+
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		html.enabled true
+		xml.enabled false
+		csv.enabled false
+	}
 }
 
 dependencies {
@@ -53,5 +54,5 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
-	finalizedBy jacocoTestReport
+	finalizedBy 'jacocoTestReport'
 }

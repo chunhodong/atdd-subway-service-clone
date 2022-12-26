@@ -10,7 +10,6 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table
 @Getter
 public class Line extends BaseEntity {
     @Id
