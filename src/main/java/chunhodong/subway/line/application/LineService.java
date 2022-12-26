@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
     public void createLine(){
 

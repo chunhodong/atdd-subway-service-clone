@@ -18,14 +18,17 @@ public class Line {
     private String name;
     @Enumerated(EnumType.STRING)
     private LineColor color;
+
     public Line(String name, LineColor color) {
         validateLine(name, color);
         this.name = name;
         this.color = color;
     }
+
     public Line() {
 
     }
+
     private void validateLine(String name, LineColor color) {
         if (Strings.isEmpty(name)) {
             throw new LineException(LineExceptionCode.EMPTY_NAME);
@@ -34,6 +37,7 @@ public class Line {
             throw new LineException(LineExceptionCode.EMPTY_COLOR);
         }
     }
+
     public void modifyName(String name){
         validateLine(name,color);
         this.name = name;
