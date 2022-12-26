@@ -1,5 +1,6 @@
 package chunhodong.subway.line.dto;
 
+import chunhodong.subway.line.domain.Line;
 import chunhodong.subway.line.domain.LineColor;
 import lombok.Getter;
 
@@ -11,5 +12,9 @@ public class LineRequest {
     public LineRequest(String name, LineColor color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Line toLine() {
+        return Line.of(name, color);
     }
 }

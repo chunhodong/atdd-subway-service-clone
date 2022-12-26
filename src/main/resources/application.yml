@@ -9,3 +9,17 @@ spring:
 handlebars:
   suffix: .html
   enabled: true
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: mysql://localhost:3306/subway?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: root
+    password: 9502
+handlebars:
+  suffix: .html
+  enabled: true

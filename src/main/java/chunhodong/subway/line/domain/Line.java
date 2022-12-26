@@ -19,14 +19,18 @@ public class Line {
     @Enumerated(EnumType.STRING)
     private LineColor color;
 
-    public Line(String name, LineColor color) {
+    protected Line(String name, LineColor color) {
         validateLine(name, color);
         this.name = name;
         this.color = color;
     }
 
-    public Line() {
+    protected Line() {
 
+    }
+
+    public static Line of(String name, LineColor color) {
+        return new Line(name,color);
     }
 
     private void validateLine(String name, LineColor color) {
