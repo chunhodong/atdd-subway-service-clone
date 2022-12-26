@@ -5,10 +5,7 @@ import chunhodong.subway.line.dto.LineRequest;
 import chunhodong.subway.line.dto.LineResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -23,5 +20,16 @@ public class LineController {
     public ResponseEntity createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.createLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity modifyLine(@PathVariable("id") Long id, @RequestBody LineRequest lineRequest) {
+        lineService.modifyLine(id, lineRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> findLine(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(lineService.findLine(id));
     }
 }

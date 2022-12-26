@@ -1,11 +1,16 @@
 spring:
   profiles:
-    active: local
+    active: test
 ---
 spring:
   config:
     activate:
       on-profile: local
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
 handlebars:
   suffix: .html
   enabled: true
@@ -14,10 +19,16 @@ spring:
   config:
     activate:
       on-profile: test
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: create-drop
+        show_sql: true
+        format_sql: true
+    generate-ddl: true
   datasource:
-    type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: mysql://localhost:3306/subway?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/subway?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
     username: root
     password: 9502
 handlebars:
