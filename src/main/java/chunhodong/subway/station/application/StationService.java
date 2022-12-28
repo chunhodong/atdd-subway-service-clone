@@ -2,6 +2,8 @@ package chunhodong.subway.station.application;
 
 import chunhodong.subway.station.dto.StationRequest;
 import chunhodong.subway.station.dto.StationResponse;
+import chunhodong.subway.station.exception.StationException;
+import chunhodong.subway.station.exception.StationExceptionCode;
 import chunhodong.subway.station.persistence.StationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,5 +26,10 @@ public class StationService {
                 .stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public void validateStation(Long stationId){
+        stationRepository.findById(stationId)
+                .orElseThrow(() -> new StationException(StationExceptionCode.NONE_EXISTS_STATION));
     }
 }

@@ -20,6 +20,7 @@ spring:
     activate:
       on-profile: dev
   jpa:
+    database: mysql
     properties:
       hibernate:
         ddl-auto: create-drop

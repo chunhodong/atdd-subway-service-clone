@@ -8,20 +8,24 @@ import chunhodong.subway.line.exception.LineExceptionCode;
 import chunhodong.subway.line.persistence.LineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class LineService {
 
     private final LineRepository lineRepository;
 
+    @Transactional
     public LineResponse createLine(LineRequest lineRequest) {
         return LineResponse.of(lineRepository.save(lineRequest.toLine()));
     }
 
+    @Transactional
     public void modifyLine(Long lineId, LineRequest lineRequest) {
         lineRepository.findById(lineId).orElseThrow(() -> new LineException(LineExceptionCode.NONE_EXISTS_LINE));
         lineRepository.save(lineRequest.toLine());
@@ -37,5 +41,10 @@ public class LineService {
         return lineRepository.findAll()
                 .stream()
                 .map(LineResponse::of).collect(Collectors.toList());
+    }
+
+    public void validateLine(Long lineId){
+        lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineException(LineExceptionCode.NONE_EXISTS_LINE));
     }
 }
