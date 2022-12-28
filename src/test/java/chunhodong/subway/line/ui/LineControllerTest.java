@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+
+@DisplayName("Line컨트롤러 테스트")
 public class LineControllerTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선을 생성한다")

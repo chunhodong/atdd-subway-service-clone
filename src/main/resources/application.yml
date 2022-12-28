@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: test
+    active: dev
 ---
 spring:
   config:
@@ -18,7 +18,7 @@ handlebars:
 spring:
   config:
     activate:
-      on-profile: test
+      on-profile: dev
   jpa:
     properties:
       hibernate:
