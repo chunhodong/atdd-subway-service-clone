@@ -46,12 +46,12 @@ public class Sections {
         return stations.stream().anyMatch(s -> s.equals(station));
     }
 
-    private void rebuildUpStation(boolean isUpStationExisted, Section section) {
+    private void rebuildUpStation(boolean isUpStationExisted, Section newSection) {
         if (isUpStationExisted) {
             sections.stream()
-                    .filter(it -> it.getUpStation().equals(section.getUpStation()))
+                    .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
                     .findFirst()
-                    .ifPresent(it -> it.updateUpStation(section.getDownStation(), section.getDistance()));
+                    .ifPresent(section -> section.updateUpStation(newSection.getDownStation(), newSection.getDistance()));
         }
     }
 

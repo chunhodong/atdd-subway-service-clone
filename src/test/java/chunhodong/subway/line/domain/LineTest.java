@@ -103,6 +103,76 @@ public class LineTest {
                         .hasMessageContaining("등록할 수 없는 구간 입니다.");
             }
         }
+
+        @Nested
+        @DisplayName("기존에 존재하는 상행역과 새로운 상행역이 일치할경우 새로운 구간이 크거나 같으면 예외발생")
+        class ContextWithNewUpStation {
+
+            private Line line;
+            private Section lineSection;
+            private Section newSection;
+
+            @BeforeEach
+            void before(){
+                lineSection = Section.builder()
+                        .upStation(Station.of("강동역"))
+                        .downStation(Station.of("명일역"))
+                        .distance(10)
+                        .build();
+                line = Line.builder()
+                        .name("5호선")
+                        .color(LineColor.PURPLE)
+                        .section(lineSection)
+                        .build();
+                newSection = Section.builder()
+                        .upStation(Station.of("강동역"))
+                        .downStation(Station.of("길동역"))
+                        .distance(10)
+                        .build();
+            }
+
+            @Test
+            void throwsExeption() {
+                assertThatThrownBy(() -> line.addSection(newSection))
+                        .isInstanceOf(RuntimeException.class)
+                        .hasMessageContaining("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
+            }
+        }
+
+        @Nested
+        @DisplayName("기존에 존재하는 하행역과 새로운 하행역이 일치할경우 새로운 구간이 크거나 같으면 예외발생")
+        class ContextWithNewDownStation {
+
+            private Line line;
+            private Section lineSection;
+            private Section newSection;
+
+            @BeforeEach
+            void before(){
+                lineSection = Section.builder()
+                        .upStation(Station.of("강동역"))
+                        .downStation(Station.of("명일역"))
+                        .distance(10)
+                        .build();
+                line = Line.builder()
+                        .name("5호선")
+                        .color(LineColor.PURPLE)
+                        .section(lineSection)
+                        .build();
+                newSection = Section.builder()
+                        .upStation(Station.of("길동역"))
+                        .downStation(Station.of("명일역"))
+                        .distance(10)
+                        .build();
+            }
+
+            @Test
+            void throwsExeption() {
+                assertThatThrownBy(() -> line.addSection(newSection))
+                        .isInstanceOf(RuntimeException.class)
+                        .hasMessageContaining("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
+            }
+        }
     }
 
 }
