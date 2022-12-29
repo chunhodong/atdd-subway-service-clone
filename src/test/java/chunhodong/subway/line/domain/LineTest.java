@@ -4,8 +4,12 @@ import chunhodong.subway.line.exception.LineException;
 import chunhodong.subway.station.domain.Station;
 import org.junit.jupiter.api.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Line도메인테스트")
 public class LineTest {
@@ -106,7 +110,7 @@ public class LineTest {
 
         @Nested
         @DisplayName("기존에 존재하는 상행역과 새로운 상행역이 일치할경우 새로운 구간이 크거나 같으면 예외발생")
-        class ContextWithNewUpStation {
+        class ContextWithNewUpStationHasLongDistance {
 
             private Line line;
             private Section lineSection;
@@ -141,7 +145,7 @@ public class LineTest {
 
         @Nested
         @DisplayName("기존에 존재하는 하행역과 새로운 하행역이 일치할경우 새로운 구간이 크거나 같으면 예외발생")
-        class ContextWithNewDownStation {
+        class ContextWithNewDownStationHasLongDistance {
 
             private Line line;
             private Section lineSection;
@@ -173,6 +177,162 @@ public class LineTest {
                         .hasMessageContaining("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
             }
         }
+
+        @Nested
+        @DisplayName("기존에 존재하는 상행역과 새로운 상행역이 일치할경우 새로운 구간이 기존구간에 포함")
+        class ContextWithNewUpStationContains {
+
+            private Line line;
+            private Section lineSection;
+            private Section newSection;
+
+            @BeforeEach
+            void before(){
+                lineSection = Section.builder()
+                        .upStation(Station.of("강동역"))
+                        .downStation(Station.of("명일역"))
+                        .distance(10)
+                        .build();
+                line = Line.builder()
+                        .name("5호선")
+                        .color(LineColor.PURPLE)
+                        .section(lineSection)
+                        .build();
+                newSection = Section.builder()
+                        .upStation(Station.of("강동역"))
+                        .downStation(Station.of("길동역"))
+                        .distance(3)
+                        .build();
+            }
+
+            @Test
+            void returnStations() {
+                line.addSection(newSection);
+
+                List<Station> stations = line.getStations();
+                assertAll(
+                        () -> assertThat(stations).hasSize(3),
+                        () -> assertThat(stations.stream().map(Station::getName).collect(Collectors.toList()))
+                                .contains("강동역","명일역","길동역"));
+            }
+        }
+
+        @Nested
+        @DisplayName("기존에 존재하는 상행역과 새로운 하행역이 일치할경우 새로운 구간이 추가")
+        class ContextWithNewUpStationAdd {
+
+            private Line line;
+            private Section lineSection;
+            private Section newSection;
+
+            @BeforeEach
+            void before(){
+                lineSection = Section.builder()
+                        .upStation(Station.of("강동역"))
+                        .downStation(Station.of("명일역"))
+                        .distance(10)
+                        .build();
+                line = Line.builder()
+                        .name("5호선")
+                        .color(LineColor.PURPLE)
+                        .section(lineSection)
+                        .build();
+                newSection = Section.builder()
+                        .upStation(Station.of("천호역"))
+                        .downStation(Station.of("강동역"))
+                        .distance(11)
+                        .build();
+            }
+
+            @Test
+            void returnStations() {
+                line.addSection(newSection);
+                List<Station> stations = line.getStations();
+                assertAll(
+                        () -> assertThat(stations).hasSize(3),
+                        () -> assertThat(stations.stream().map(Station::getName).collect(Collectors.toList()))
+                                .contains("천호역","강동역","명일역"));
+            }
+        }
+
+        @Nested
+        @DisplayName("기존에 존재하는 하행역과 새로운 하행역이 일치할경우 새로운 구간이 기존구간에 포함")
+        class ContextWithNewDownStationContains {
+
+            private Line line;
+            private Section lineSection;
+            private Section newSection;
+
+            @BeforeEach
+            void before(){
+                lineSection = Section.builder()
+                        .upStation(Station.of("강동역"))
+                        .downStation(Station.of("명일역"))
+                        .distance(10)
+                        .build();
+                line = Line.builder()
+                        .name("5호선")
+                        .color(LineColor.PURPLE)
+                        .section(lineSection)
+                        .build();
+                newSection = Section.builder()
+                        .upStation(Station.of("길동역"))
+                        .downStation(Station.of("명일역"))
+                        .distance(3)
+                        .build();
+            }
+
+            @Test
+            void returnStations() {
+                line.addSection(newSection);
+
+                List<Station> stations = line.getStations();
+                assertAll(
+                        () -> assertThat(stations).hasSize(3),
+                        () -> assertThat(stations.stream().map(Station::getName).collect(Collectors.toList()))
+                                .contains("강동역","명일역","길동역"));
+            }
+        }
+
+        @Nested
+        @DisplayName("기존에 존재하는 상행역과 새로운 상행역이 일치할경우 새로운 구간이 기존구간에 포함")
+        class ContextWithNewDownStationAdd {
+
+            private Line line;
+            private Section lineSection;
+            private Section newSection;
+
+            @BeforeEach
+            void before(){
+                lineSection = Section.builder()
+                        .upStation(Station.of("강동역"))
+                        .downStation(Station.of("명일역"))
+                        .distance(10)
+                        .build();
+                line = Line.builder()
+                        .name("5호선")
+                        .color(LineColor.PURPLE)
+                        .section(lineSection)
+                        .build();
+                newSection = Section.builder()
+                        .upStation(Station.of("명일역"))
+                        .downStation(Station.of("고덕역"))
+                        .distance(3)
+                        .build();
+            }
+
+            @Test
+            void returnStations() {
+                line.addSection(newSection);
+
+                List<Station> stations = line.getStations();
+                assertAll(
+                        () -> assertThat(stations).hasSize(3),
+                        () -> assertThat(stations.stream().map(Station::getName).collect(Collectors.toList()))
+                                .contains("강동역","명일역","고덕역"));
+            }
+        }
+
     }
 
 }

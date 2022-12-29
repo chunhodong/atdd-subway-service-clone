@@ -3,10 +3,12 @@ package chunhodong.subway.line.domain;
 import chunhodong.subway.common.BaseEntity;
 import chunhodong.subway.line.exception.LineException;
 import chunhodong.subway.line.exception.LineExceptionCode;
+import chunhodong.subway.station.domain.Station;
 import lombok.Getter;
 import org.apache.logging.log4j.util.Strings;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -42,6 +44,10 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         sections.addSection(section);
+    }
+
+    public List<Station> getStations(){
+        return sections.getStations();
     }
 
     public static LineBuilder builder() {
