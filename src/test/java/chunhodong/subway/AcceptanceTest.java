@@ -20,11 +20,12 @@ public class AcceptanceTest {
 
     @BeforeEach
     public void before() {
+
         RestAssured.port = port;
+        databaseCleanup.execute();
     }
 
     @AfterEach
     public void after(){
-        databaseCleanup.execute();
     }
 }

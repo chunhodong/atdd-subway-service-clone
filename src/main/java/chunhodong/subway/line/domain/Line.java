@@ -25,12 +25,20 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections();
 
+    protected Line() {
+    }
+
     protected Line(LineBuilder builder) {
         validateLine(builder.name, builder.color);
         this.id = builder.id;
         this.name = builder.name;
         this.color = builder.color;
-        this.sections = new Sections(builder.section);
+        this.sections = new Sections(Section.builder()
+                .line(this)
+                .upStation(builder.section.getUpStation())
+                .downStation(builder.section.getDownStation())
+                .distance(builder.section.getDistance())
+                .build());
     }
 
     private void validateLine(String name, LineColor color) {
@@ -46,7 +54,7 @@ public class Line extends BaseEntity {
         sections.addSection(section);
     }
 
-    public List<Station> getStations(){
+    public List<Station> getStations() {
         return sections.getStations();
     }
 

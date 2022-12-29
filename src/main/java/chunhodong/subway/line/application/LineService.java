@@ -39,8 +39,7 @@ public class LineService {
                 .color(lineRequest.getColor())
                 .section(section)
                 .build();
-        Line persistLine = lineRepository.save(line);
-        return null;
+        return LineResponse.of(lineRepository.save(line));
     }
 
     public LineResponse findLine(Long lineId) {
