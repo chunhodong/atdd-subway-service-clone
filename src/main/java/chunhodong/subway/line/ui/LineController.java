@@ -3,6 +3,7 @@ package chunhodong.subway.line.ui;
 import chunhodong.subway.line.application.LineService;
 import chunhodong.subway.line.dto.LineRequest;
 import chunhodong.subway.line.dto.LineResponse;
+import chunhodong.subway.line.dto.SectionRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +24,6 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity modifyLine(@PathVariable("id") Long id, @RequestBody LineRequest lineRequest) {
-        lineService.modifyLine(id, lineRequest);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> findLine(@PathVariable("id") Long id) {
         return ResponseEntity.ok(lineService.findLine(id));
@@ -37,6 +32,12 @@ public class LineController {
     @GetMapping
     public ResponseEntity<List<LineResponse>> findLines() {
         return ResponseEntity.ok(lineService.findLines());
+    }
+
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity addLineStation(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        lineService.addSection(lineId, sectionRequest);
+        return ResponseEntity.ok().build();
     }
 }
 

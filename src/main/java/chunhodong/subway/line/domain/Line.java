@@ -17,26 +17,18 @@ public class Line extends BaseEntity {
     private Long id;
     @Column(nullable = false, unique = true)
     private String name;
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private LineColor color;
+    @Embedded
+    private Sections sections = new Sections();
 
-    protected Line(Long id, String name, LineColor color) {
-        this(name, color);
-        this.id = id;
-    }
-
-    protected Line(String name, LineColor color) {
-        validateLine(name, color);
-        this.name = name;
-        this.color = color;
-    }
-
-    protected Line() {
-
-    }
-
-    public static Line of(Long id, String name, LineColor color) {
-        return new Line(id, name, color);
+    protected Line(LineBuilder builder) {
+        validateLine(builder.name, builder.color);
+        this.id = builder.id;
+        this.name = builder.name;
+        this.color = builder.color;
+        this.sections = new Sections(builder.section);
     }
 
     private void validateLine(String name, LineColor color) {
@@ -48,8 +40,43 @@ public class Line extends BaseEntity {
         }
     }
 
-    public void modifyName(String name) {
-        validateLine(name, color);
-        this.name = name;
+    public void addSection(Section section) {
+        sections.addSection(section);
+    }
+
+    public static LineBuilder builder() {
+        return new LineBuilder();
+    }
+
+    public static class LineBuilder {
+        private Long id;
+        private String name;
+        private LineColor color;
+        private Section section;
+
+        public LineBuilder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public LineBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public LineBuilder color(LineColor color) {
+            this.color = color;
+            return this;
+        }
+
+        public LineBuilder section(Section section) {
+            this.section = section;
+            return this;
+        }
+
+        public Line build() {
+            return new Line(this);
+        }
+
     }
 }

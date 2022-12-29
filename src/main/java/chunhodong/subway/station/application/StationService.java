@@ -1,5 +1,6 @@
 package chunhodong.subway.station.application;
 
+import chunhodong.subway.station.domain.Station;
 import chunhodong.subway.station.dto.StationRequest;
 import chunhodong.subway.station.dto.StationResponse;
 import chunhodong.subway.station.exception.StationException;
@@ -28,8 +29,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public void validateStation(Long stationId){
-        stationRepository.findById(stationId)
-                .orElseThrow(() -> new StationException(StationExceptionCode.NONE_EXISTS_STATION));
+    public Station findStationById(Long id) {
+        return stationRepository.findById(id).orElseThrow(RuntimeException::new);
     }
 }

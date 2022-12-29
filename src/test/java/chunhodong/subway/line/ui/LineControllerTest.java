@@ -16,64 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("Line컨트롤러 테스트")
 public class LineControllerTest extends AcceptanceTest {
 
-    @DisplayName("지하철 노선을 생성한다")
-    @Test
-    void createLine() {
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(new LineRequest("신분당선", LineColor.BLUE));
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    @DisplayName("지하철 노선이름이 없으면 노선추가에 실패한다")
-    @Test
-    void throwsExceptionWithNoName() {
-        LineRequest lineRequest = new LineRequest("", LineColor.BLUE);
-
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
-
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().asString()).isEqualTo("노선이름을 입력해야 합니다"));
-
-    }
-
-    @DisplayName("지하철 노선컬러가 없으면 노선추가에 실패한다")
-    @Test
-    void throwsExceptionWithNoColor() {
-        LineRequest lineRequest = new LineRequest("2호선", null);
-
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
-
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().asString()).isEqualTo("노선색상을 입력해야 합니다"));
-
-    }
-
-    @DisplayName("지하철 노선 수정에 성공한다")
-    @Test
-    void modifyLine() {
-        String lineId = 지하철_노선_생성_요청(new LineRequest("2호선", LineColor.GREEN))
-                .jsonPath().get("id").toString();
-        지하철_노선_수정_요청(lineId, new LineRequest(Long.valueOf(lineId), "3호선", LineColor.GREEN));
-
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
-
-        assertThat(response.body().jsonPath().getString("name")).isEqualTo("3호선");
-    }
-
-    @DisplayName("지하철 노선목록 조회에 성공한다")
-    @Test
-    void findLines() {
-        지하철_노선_생성_요청(new LineRequest("1호선", LineColor.BLUE));
-        지하철_노선_생성_요청(new LineRequest("2호선", LineColor.GREEN));
-        지하철_노선_생성_요청(new LineRequest("3호선", LineColor.RED));
-
-        ExtractableResponse<Response> response = 지하철_노선목록_생성_요청();
-
-        assertThat(response.body().jsonPath().getList(".")).hasSize(3);
-    }
-
     public static ExtractableResponse<Response> 지하철_노선목록_생성_요청() {
         return RestAssured
                 .given().log().all()

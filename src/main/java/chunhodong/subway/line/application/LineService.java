@@ -1,11 +1,15 @@
 package chunhodong.subway.line.application;
 
 import chunhodong.subway.line.domain.Line;
+import chunhodong.subway.line.domain.Section;
 import chunhodong.subway.line.dto.LineRequest;
 import chunhodong.subway.line.dto.LineResponse;
+import chunhodong.subway.line.dto.SectionRequest;
 import chunhodong.subway.line.exception.LineException;
 import chunhodong.subway.line.exception.LineExceptionCode;
 import chunhodong.subway.line.persistence.LineRepository;
+import chunhodong.subway.station.application.StationService;
+import chunhodong.subway.station.domain.Station;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,22 +23,28 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineRepository lineRepository;
+    private final StationService stationService;
 
     @Transactional
     public LineResponse createLine(LineRequest lineRequest) {
-        return LineResponse.of(lineRepository.save(lineRequest.toLine()));
-    }
-
-    @Transactional
-    public void modifyLine(Long lineId, LineRequest lineRequest) {
-        lineRepository.findById(lineId).orElseThrow(() -> new LineException(LineExceptionCode.NONE_EXISTS_LINE));
-        lineRepository.save(lineRequest.toLine());
+        Station upStation = stationService.findStationById(lineRequest.getUpStationId());
+        Station downStation = stationService.findStationById(lineRequest.getDownStationId());
+        Section section = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(lineRequest.getDistance())
+                .build();
+        Line line = Line.builder()
+                .name(lineRequest.getName())
+                .color(lineRequest.getColor())
+                .section(section)
+                .build();
+        Line persistLine = lineRepository.save(line);
+        return null;
     }
 
     public LineResponse findLine(Long lineId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineException(LineExceptionCode.NONE_EXISTS_LINE));
-        return LineResponse.of(line);
+        return LineResponse.of(findLineById(lineId));
     }
 
     public List<LineResponse> findLines() {
@@ -43,8 +53,22 @@ public class LineService {
                 .map(LineResponse::of).collect(Collectors.toList());
     }
 
-    public void validateLine(Long lineId){
-        lineRepository.findById(lineId)
+    @Transactional
+    public void addSection(Long lineId, SectionRequest request) {
+        Line line = findLineById(lineId);
+        Station upStation = stationService.findStationById(request.getUpStationId());
+        Station downStation = stationService.findStationById(request.getDownStationId());
+        Section section = Section.builder()
+                .line(line)
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(request.getDistance())
+                .build();
+        line.addSection(section);
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineException(LineExceptionCode.NONE_EXISTS_LINE));
     }
 }
