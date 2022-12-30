@@ -39,12 +39,6 @@ public class LineTest {
                         .hasMessageContaining("노선색상을 입력해야 합니다");
             }
         }
-
-        @DisplayName("노선의 이름과 컬러를 입력하면 생성에 성공")
-        @Test
-        void returnLine() {
-            assertThat(Line.builder().name("2호선").color(LineColor.BLUE).build()).isNotNull();
-        }
     }
 
     @Nested

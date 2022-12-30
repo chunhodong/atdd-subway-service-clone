@@ -33,7 +33,7 @@ public class Line extends BaseEntity {
         this.id = builder.id;
         this.name = builder.name;
         this.color = builder.color;
-        this.sections = new Sections(Section.builder()
+        this.sections = Objects.isNull(builder.section) ? this.sections : new Sections(Section.builder()
                 .line(this)
                 .upStation(builder.section.getUpStation())
                 .downStation(builder.section.getDownStation())
