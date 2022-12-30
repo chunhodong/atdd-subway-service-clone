@@ -1,6 +1,7 @@
 package chunhodong.subway.line.domain;
 
 
+import chunhodong.subway.line.exception.LineException;
 import chunhodong.subway.station.domain.Station;
 import io.jsonwebtoken.lang.Collections;
 
@@ -10,7 +11,11 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static chunhodong.subway.line.exception.LineExceptionCode.NONE_REGISTED_SECTION;
+import static chunhodong.subway.line.exception.LineExceptionCode.SINGLE_SECTION;
 
 @Embeddable
 public class Sections {
@@ -51,7 +56,7 @@ public class Sections {
             sections.stream()
                     .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
                     .findFirst()
-                    .ifPresent(section -> section.updateUpStation(newSection.getDownStation(), newSection.getDistance()));
+                    .ifPresent(section -> section.splitUpStation(newSection.getDownStation(), newSection.getDistance()));
         }
     }
 
@@ -60,7 +65,7 @@ public class Sections {
             sections.stream()
                     .filter(it -> it.getDownStation().equals(section.getDownStation()))
                     .findFirst()
-                    .ifPresent(it -> it.updateDownStation(section.getUpStation(), section.getDistance()));
+                    .ifPresent(it -> it.splitDownStation(section.getUpStation(), section.getDistance()));
         }
     }
 
@@ -127,49 +132,51 @@ public class Sections {
         stations.add(station);
     }
 
-    public void removeStation(Station station, Line line) {
+    public void removeStation(Station station) {
         if (sections.size() <= 1) {
-            throw new RuntimeException();
+            throw new LineException(SINGLE_SECTION);
         }
         Section upLineStation = getUpLineStation(station);
         Section downLineStation = getDownLineStation(station);
-        removeSection(upLineStation);
-        removeSection(downLineStation);
-        rebuildSection(line, upLineStation, downLineStation);
+        validateSection(upLineStation, downLineStation);
+        rebuildSection(upLineStation, downLineStation);
+    }
+
+    private void validateSection(Section upLineStation, Section downLineStation) {
+        if (Objects.isNull(upLineStation) && Objects.isNull(downLineStation)) {
+            throw new LineException(NONE_REGISTED_SECTION);
+        }
     }
 
     private void removeSection(Section section) {
-        if (section == null) {
+        if (Objects.isNull(section)) {
             return;
         }
         sections.remove(section);
     }
 
-    private void rebuildSection(Line line, Section upLineStation, Section downLineStation) {
-        if (upLineStation == null || downLineStation == null) {
+    private void rebuildSection(Section upLineSection, Section downLineSection) {
+        if (Objects.isNull(upLineSection)) {
+            removeSection(downLineSection);
             return;
         }
-        Station newUpStation = downLineStation.getUpStation();
-        Station newDownStation = upLineStation.getDownStation();
-        int newDistance = upLineStation.getDistance() + downLineStation.getDistance();
-        Section section = Section.builder()
-                .line(line)
-                .upStation(newUpStation)
-                .downStation(newDownStation)
-                .distance(newDistance)
-                .build();
-        addSection(section);
+        if (Objects.isNull(downLineSection)) {
+            removeSection(upLineSection);
+            return;
+        }
+        removeSection(upLineSection);
+        downLineSection.modifyDownStation(upLineSection);
     }
 
-    private Section getUpLineStation(Station station) {
+    private Section getUpLineStation(Station findStation) {
         return sections.stream()
-                .filter(it -> it.getUpStation().equals(station))
+                .filter(station -> station.getUpStation().equals(findStation))
                 .findFirst().orElse(null);
     }
 
-    private Section getDownLineStation(Station station) {
+    private Section getDownLineStation(Station findStation) {
         return sections.stream()
-                .filter(it -> it.getDownStation().equals(station))
+                .filter(station -> station.getDownStation().equals(findStation))
                 .findFirst().orElse(null);
     }
 

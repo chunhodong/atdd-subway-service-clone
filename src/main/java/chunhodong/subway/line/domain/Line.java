@@ -58,6 +58,10 @@ public class Line extends BaseEntity {
         return sections.getStations();
     }
 
+    public void removeSection(Station station) {
+        this.sections.removeStation(station);
+    }
+
     public static LineBuilder builder() {
         return new LineBuilder();
     }

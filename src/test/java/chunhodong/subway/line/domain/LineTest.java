@@ -2,7 +2,10 @@ package chunhodong.subway.line.domain;
 
 import chunhodong.subway.line.exception.LineException;
 import chunhodong.subway.station.domain.Station;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,7 +56,7 @@ public class LineTest {
             private Section section;
 
             @BeforeEach
-            void before(){
+            void before() {
                 line = Line.builder()
                         .name("2호선")
                         .color(LineColor.BLUE)
@@ -78,7 +81,7 @@ public class LineTest {
             private Section newSection;
 
             @BeforeEach
-            void before(){
+            void before() {
                 lineSection = Section.builder()
                         .upStation(Station.of("강동역"))
                         .downStation(Station.of("길동역"))
@@ -111,7 +114,7 @@ public class LineTest {
             private Section newSection;
 
             @BeforeEach
-            void before(){
+            void before() {
                 lineSection = Section.builder()
                         .upStation(Station.of("강동역"))
                         .downStation(Station.of("명일역"))
@@ -146,7 +149,7 @@ public class LineTest {
             private Section newSection;
 
             @BeforeEach
-            void before(){
+            void before() {
                 lineSection = Section.builder()
                         .upStation(Station.of("강동역"))
                         .downStation(Station.of("명일역"))
@@ -181,7 +184,7 @@ public class LineTest {
             private Section newSection;
 
             @BeforeEach
-            void before(){
+            void before() {
                 lineSection = Section.builder()
                         .upStation(Station.of("강동역"))
                         .downStation(Station.of("명일역"))
@@ -207,7 +210,7 @@ public class LineTest {
                 assertAll(
                         () -> assertThat(stations).hasSize(3),
                         () -> assertThat(stations.stream().map(Station::getName).collect(Collectors.toList()))
-                                .contains("강동역","명일역","길동역"));
+                                .contains("강동역", "명일역", "길동역"));
             }
         }
 
@@ -220,7 +223,7 @@ public class LineTest {
             private Section newSection;
 
             @BeforeEach
-            void before(){
+            void before() {
                 lineSection = Section.builder()
                         .upStation(Station.of("강동역"))
                         .downStation(Station.of("명일역"))
@@ -245,7 +248,7 @@ public class LineTest {
                 assertAll(
                         () -> assertThat(stations).hasSize(3),
                         () -> assertThat(stations.stream().map(Station::getName).collect(Collectors.toList()))
-                                .contains("천호역","강동역","명일역"));
+                                .contains("천호역", "강동역", "명일역"));
             }
         }
 
@@ -258,7 +261,7 @@ public class LineTest {
             private Section newSection;
 
             @BeforeEach
-            void before(){
+            void before() {
                 lineSection = Section.builder()
                         .upStation(Station.of("강동역"))
                         .downStation(Station.of("명일역"))
@@ -284,7 +287,7 @@ public class LineTest {
                 assertAll(
                         () -> assertThat(stations).hasSize(3),
                         () -> assertThat(stations.stream().map(Station::getName).collect(Collectors.toList()))
-                                .contains("강동역","명일역","길동역"));
+                                .contains("강동역", "명일역", "길동역"));
             }
         }
 
@@ -297,7 +300,7 @@ public class LineTest {
             private Section newSection;
 
             @BeforeEach
-            void before(){
+            void before() {
                 lineSection = Section.builder()
                         .upStation(Station.of("강동역"))
                         .downStation(Station.of("명일역"))
@@ -323,10 +326,114 @@ public class LineTest {
                 assertAll(
                         () -> assertThat(stations).hasSize(3),
                         () -> assertThat(stations.stream().map(Station::getName).collect(Collectors.toList()))
-                                .contains("강동역","명일역","고덕역"));
+                                .contains("강동역", "명일역", "고덕역"));
             }
         }
 
     }
 
+    @Nested
+    @DisplayName("구간제거는")
+    class DescribeRemoveSection {
+
+        @Nested
+        @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거하면 예외발생")
+        class ContextWithSingleSection {
+
+            private Line line;
+            private Section lineSection;
+
+            @BeforeEach
+            void before() {
+                lineSection = Section.builder()
+                        .upStation(Station.of("강동역"))
+                        .downStation(Station.of("명일역"))
+                        .distance(10)
+                        .build();
+                line = Line.builder()
+                        .name("5호선")
+                        .color(LineColor.PURPLE)
+                        .section(lineSection)
+                        .build();
+            }
+
+            @Test
+            void throwsExeption() {
+                assertThatThrownBy(() -> line.removeSection(Station.of("강동역")))
+                        .isInstanceOf(LineException.class)
+                        .hasMessageContaining("구간의 수는 2개 이상 이어야합니다");
+            }
+        }
+
+        @Nested
+        @DisplayName("노선에 없는 역인 경우 예외발생")
+        class ContextWithNoContainStation {
+
+            private Line line;
+            private Section lineSection;
+
+            @BeforeEach
+            void before() {
+                lineSection = Section.builder()
+                        .upStation(Station.of("강동역"))
+                        .downStation(Station.of("명일역"))
+                        .distance(10)
+                        .build();
+                line = Line.builder()
+                        .name("5호선")
+                        .color(LineColor.PURPLE)
+                        .section(lineSection)
+                        .build();
+                Section section = Section.builder()
+                        .line(line)
+                        .upStation(Station.of("명일역"))
+                        .downStation(Station.of("고덕역"))
+                        .distance(10)
+                        .build();
+                line.addSection(section);
+            }
+
+            @Test
+            void throwsExeption() {
+                assertThatThrownBy(() -> line.removeSection(Station.of("상일역")))
+                        .isInstanceOf(LineException.class)
+                        .hasMessageContaining("등록된 구간이 아닙니다");
+            }
+        }
+
+        @Nested
+        @DisplayName("중간역을 삭제할 경우 역을 포함한 구간이 전부삭제되고 남은 역들이 새로운 구간으로 추가")
+        class ContextWithContainsAllStation {
+
+            private Line line;
+            private Section lineSection;
+
+            @BeforeEach
+            void before() {
+                lineSection = Section.builder()
+                        .upStation(Station.of("강동역"))
+                        .downStation(Station.of("명일역"))
+                        .distance(10)
+                        .build();
+                line = Line.builder()
+                        .name("5호선")
+                        .color(LineColor.PURPLE)
+                        .section(lineSection)
+                        .build();
+                line.addSection(Section.builder()
+                        .line(line)
+                        .upStation(Station.of("명일역"))
+                        .downStation(Station.of("고덕역"))
+                        .distance(10)
+                        .build());
+            }
+
+            @Test
+            void throwsExeption() {
+                line.removeSection(Station.of("명일역"));
+
+                assertThat(line.getStations()).contains(Station.of("강동역"),Station.of("고덕역"));
+            }
+        }
+    }
 }

@@ -70,4 +70,11 @@ public class LineService {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineException(LineExceptionCode.NONE_EXISTS_LINE));
     }
+
+    @Transactional
+    public void removeSection(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = stationService.findStationById(stationId);
+        line.removeSection(station);
+    }
 }
