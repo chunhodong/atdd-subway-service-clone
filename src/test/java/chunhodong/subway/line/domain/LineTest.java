@@ -284,6 +284,7 @@ public class LineTest {
                 line.addSection(newSection);
 
                 List<Station> stations = line.getStations();
+
                 assertAll(
                         () -> assertThat(stations).hasSize(3),
                         () -> assertThat(stations.stream().map(Station::getName).collect(Collectors.toList()))
@@ -433,6 +434,76 @@ public class LineTest {
                 line.removeSection(Station.of("명일역"));
 
                 assertThat(line.getStations()).contains(Station.of("강동역"),Station.of("고덕역"));
+            }
+        }
+
+        @Nested
+        @DisplayName("첫번째 상행역을 삭제하는 경우 기존 구간에서 제거")
+        class ContextWithFirstUpStation {
+
+            private Line line;
+            private Section lineSection;
+
+            @BeforeEach
+            void before() {
+                lineSection = Section.builder()
+                        .upStation(Station.of("강동역"))
+                        .downStation(Station.of("명일역"))
+                        .distance(10)
+                        .build();
+                line = Line.builder()
+                        .name("5호선")
+                        .color(LineColor.PURPLE)
+                        .section(lineSection)
+                        .build();
+                line.addSection(Section.builder()
+                        .line(line)
+                        .upStation(Station.of("명일역"))
+                        .downStation(Station.of("고덕역"))
+                        .distance(10)
+                        .build());
+            }
+
+            @Test
+            void throwsExeption() {
+                line.removeSection(Station.of("강동역"));
+
+                assertThat(line.getStations()).containsExactly(Station.of("명일역"),Station.of("고덕역"));
+            }
+        }
+
+        @Nested
+        @DisplayName("마지막 하행역을 삭제하는 경우 기존 구간에서 제거")
+        class ContextWithLastDownStation {
+
+            private Line line;
+            private Section lineSection;
+
+            @BeforeEach
+            void before() {
+                lineSection = Section.builder()
+                        .upStation(Station.of("강동역"))
+                        .downStation(Station.of("명일역"))
+                        .distance(10)
+                        .build();
+                line = Line.builder()
+                        .name("5호선")
+                        .color(LineColor.PURPLE)
+                        .section(lineSection)
+                        .build();
+                line.addSection(Section.builder()
+                        .line(line)
+                        .upStation(Station.of("명일역"))
+                        .downStation(Station.of("고덕역"))
+                        .distance(10)
+                        .build());
+            }
+
+            @Test
+            void throwsExeption() {
+                line.removeSection(Station.of("고덕역"));
+
+                assertThat(line.getStations()).containsExactly(Station.of("강동역"),Station.of("명일역"));
             }
         }
     }

@@ -28,45 +28,43 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 public class LineAcceptanceTest extends AcceptanceTest {
 
 
-    @DisplayName("구간을 추가한다")
+    @DisplayName("새로 추가하는 구간의 하행선이 기존과 일치하는 경우 기존구간이 나누어진다")
     @TestFactory
-    Stream<DynamicTest> addSection() {
+    Stream<DynamicTest> addWithSameDownSection() {
         HashMap<String, Long> values = new HashMap<>();
         return Stream.of(
                 dynamicTest("지하철 역 추가", () -> {
-                    StationRequest upStationRequest = StationRequest.builder().name("강동역").build();
-                    StationRequest downStationRequest = StationRequest.builder().name("길동역").build();
-                    StationRequest newUpStationRequest = StationRequest.builder().name("천호역").build();
-
-                    Long saveUpStationId = 지하철_역_생성_요청(upStationRequest).jsonPath().getLong("id");
-                    Long saveDownStationId = 지하철_역_생성_요청(downStationRequest).jsonPath().getLong("id");
-                    Long newUpStationId = 지하철_역_생성_요청(newUpStationRequest).jsonPath().getLong("id");
-
-                    values.put("saveUpStationId", saveUpStationId);
-                    values.put("saveDownStationId", saveDownStationId);
-                    values.put("newUpStationId", newUpStationId);
+                    Long 강동역 = 지하철_역_생성_요청(StationRequest.builder().name("강동역").build())
+                            .jsonPath().getLong("id");
+                    Long 길동역 = 지하철_역_생성_요청(StationRequest.builder().name("길동역").build())
+                            .jsonPath().getLong("id");
+                    Long 천호역 = 지하철_역_생성_요청(StationRequest.builder().name("천호역").build())
+                            .jsonPath().getLong("id");
+                    values.put("천호역", 천호역);
+                    values.put("강동역", 강동역);
+                    values.put("길동역", 길동역);
 
                 }),
                 dynamicTest("지하철 노선 추가", () -> {
-                    Long saveUpStationId = values.get("saveUpStationId");
-                    Long saveDownStationId = values.get("saveDownStationId");
+                    Long 천호역 = values.get("천호역");
+                    Long 길동역 = values.get("길동역");
 
                     Long lineId = 지하철_노선_생성_요청(LineRequest.builder()
                             .name("5호선")
                             .color(LineColor.PURPLE)
-                            .distance(5)
-                            .upStationId(saveUpStationId)
-                            .downStationId(saveDownStationId)
+                            .distance(20)
+                            .upStationId(천호역)
+                            .downStationId(길동역)
                             .build()).jsonPath().getLong("id");
 
                     values.put("lineId", lineId);
                 }),
                 dynamicTest("지하철 구간 추가", () -> {
                     Long lineId = values.get("lineId");
-                    Long saveUpStationId = values.get("saveUpStationId");
-                    Long newUpStationId = values.get("newUpStationId");
+                    Long 강동역 = values.get("강동역");
+                    Long 길동역 = values.get("길동역");
 
-                    지하철_구간_추가_요청(lineId, new SectionRequest(newUpStationId, saveUpStationId, 10));
+                    지하철_구간_추가_요청(lineId, new SectionRequest(강동역, 길동역, 10));
                 }),
                 dynamicTest("지하철 구간 조회", () -> {
                     Long lineId = values.get("lineId");
@@ -75,11 +73,338 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
                     assertAll(
                             () -> assertThat(stations).hasSize(3),
-                            () -> assertThat(stations.stream().map(StationResponse::getName).collect(Collectors.toList())).contains("천호역", "강동역", "길동역")
+                            () -> assertThat(stations.stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("천호역", "강동역", "길동역")
                     );
                 })
 
         );
+    }
+
+    @DisplayName("새로 추가하는 구간의 상행선이 기존과 일치하는 경우 기존구간이 나누어진다")
+    @TestFactory
+    Stream<DynamicTest> addWithSameUpStation() {
+        HashMap<String, Long> values = new HashMap<>();
+        return Stream.of(
+                dynamicTest("지하철 역 추가", () -> {
+                    Long 강동역 = 지하철_역_생성_요청(StationRequest.builder().name("강동역").build())
+                            .jsonPath().getLong("id");
+                    Long 길동역 = 지하철_역_생성_요청(StationRequest.builder().name("길동역").build())
+                            .jsonPath().getLong("id");
+                    Long 천호역 = 지하철_역_생성_요청(StationRequest.builder().name("천호역").build())
+                            .jsonPath().getLong("id");
+                    values.put("천호역", 천호역);
+                    values.put("강동역", 강동역);
+                    values.put("길동역", 길동역);
+
+                }),
+                dynamicTest("지하철 노선 추가", () -> {
+                    Long 천호역 = values.get("천호역");
+                    Long 길동역 = values.get("길동역");
+
+                    Long lineId = 지하철_노선_생성_요청(LineRequest.builder()
+                            .name("5호선")
+                            .color(LineColor.PURPLE)
+                            .distance(20)
+                            .upStationId(천호역)
+                            .downStationId(길동역)
+                            .build()).jsonPath().getLong("id");
+
+                    values.put("lineId", lineId);
+                }),
+                dynamicTest("지하철 구간 추가", () -> {
+                    Long lineId = values.get("lineId");
+                    Long 천호역 = values.get("천호역");
+                    Long 강동역 = values.get("강동역");
+
+                    지하철_구간_추가_요청(lineId, new SectionRequest(천호역, 강동역, 10));
+                }),
+                dynamicTest("지하철 구간 조회", () -> {
+                    Long lineId = values.get("lineId");
+
+                    List<StationResponse> stations = 지하철_노선_조회_요청(lineId).jsonPath().getList("stations", StationResponse.class);
+
+                    assertAll(
+                            () -> assertThat(stations).hasSize(3),
+                            () -> assertThat(stations.stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("천호역", "강동역", "길동역")
+                    );
+                })
+
+        );
+    }
+
+    @DisplayName("새로 추가하는 구간이 가장 앞쪽인 경우 새롭게 추가")
+    @TestFactory
+    Stream<DynamicTest> addFirstSection() {
+        HashMap<String, Long> values = new HashMap<>();
+        return Stream.of(
+                dynamicTest("지하철 역 추가", () -> {
+                    Long 강동역 = 지하철_역_생성_요청(StationRequest.builder().name("강동역").build())
+                            .jsonPath().getLong("id");
+                    Long 길동역 = 지하철_역_생성_요청(StationRequest.builder().name("길동역").build())
+                            .jsonPath().getLong("id");
+                    Long 천호역 = 지하철_역_생성_요청(StationRequest.builder().name("천호역").build())
+                            .jsonPath().getLong("id");
+                    values.put("천호역", 천호역);
+                    values.put("강동역", 강동역);
+                    values.put("길동역", 길동역);
+
+                }),
+                dynamicTest("지하철 노선 추가", () -> {
+                    Long lineId = 지하철_노선_생성_요청(LineRequest.builder()
+                            .name("5호선")
+                            .color(LineColor.PURPLE)
+                            .distance(20)
+                            .upStationId(values.get("강동역"))
+                            .downStationId(values.get("길동역"))
+                            .build()).jsonPath().getLong("id");
+                    values.put("lineId", lineId);
+                }),
+                dynamicTest("지하철 구간 추가", () -> {
+                    Long lineId = values.get("lineId");
+                    Long 천호역 = values.get("천호역");
+                    Long 강동역 = values.get("강동역");
+                    지하철_구간_추가_요청(lineId, new SectionRequest(천호역, 강동역, 10));
+                }),
+                dynamicTest("지하철 구간 조회", () -> {
+                    Long lineId = values.get("lineId");
+
+                    List<StationResponse> stations = 지하철_노선_조회_요청(lineId).jsonPath().getList("stations", StationResponse.class);
+
+                    assertAll(
+                            () -> assertThat(stations).hasSize(3),
+                            () -> assertThat(stations.stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("천호역", "강동역", "길동역")
+                    );
+                })
+
+        );
+    }
+
+    @DisplayName("새로 추가하는 구간이 가장 뒤쪽인 경우 새롭게 추가")
+    @TestFactory
+    Stream<DynamicTest> addLastSection() {
+        HashMap<String, Long> values = new HashMap<>();
+        return Stream.of(
+                dynamicTest("지하철 역 추가", () -> {
+                    Long 강동역 = 지하철_역_생성_요청(StationRequest.builder().name("강동역").build())
+                            .jsonPath().getLong("id");
+                    Long 길동역 = 지하철_역_생성_요청(StationRequest.builder().name("길동역").build())
+                            .jsonPath().getLong("id");
+                    Long 천호역 = 지하철_역_생성_요청(StationRequest.builder().name("천호역").build())
+                            .jsonPath().getLong("id");
+                    values.put("천호역", 천호역);
+                    values.put("강동역", 강동역);
+                    values.put("길동역", 길동역);
+
+                }),
+                dynamicTest("지하철 노선 추가", () -> {
+                    Long lineId = 지하철_노선_생성_요청(LineRequest.builder()
+                            .name("5호선")
+                            .color(LineColor.PURPLE)
+                            .distance(20)
+                            .upStationId(values.get("천호역"))
+                            .downStationId(values.get("강동역"))
+                            .build()).jsonPath().getLong("id");
+                    values.put("lineId", lineId);
+                }),
+                dynamicTest("지하철 구간 추가", () -> {
+                    Long lineId = values.get("lineId");
+                    Long 강동역 = values.get("강동역");
+                    Long 길동역 = values.get("길동역");
+                    지하철_구간_추가_요청(lineId, new SectionRequest(강동역, 길동역, 10));
+                }),
+                dynamicTest("지하철 구간 조회", () -> {
+                    Long lineId = values.get("lineId");
+
+                    List<StationResponse> stations = 지하철_노선_조회_요청(lineId).jsonPath().getList("stations", StationResponse.class);
+
+                    assertAll(
+                            () -> assertThat(stations).hasSize(3),
+                            () -> assertThat(stations.stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("천호역", "강동역", "길동역")
+                    );
+                })
+
+        );
+    }
+
+    @DisplayName("중간 구간을 제거한다")
+    @TestFactory
+    Stream<DynamicTest> removeMiddleSection() {
+        HashMap<String, Long> values = new HashMap<>();
+        return Stream.of(
+                dynamicTest("지하철 역 추가", () -> {
+                    Long 천호역 = 지하철_역_생성_요청(StationRequest.builder().name("천호역").build())
+                            .jsonPath().getLong("id");
+                    Long 강동역 = 지하철_역_생성_요청(StationRequest.builder().name("강동역").build())
+                            .jsonPath().getLong("id");
+                    Long 길동역 = 지하철_역_생성_요청(StationRequest.builder().name("길동역").build())
+                            .jsonPath().getLong("id");
+                    values.put("천호역", 천호역);
+                    values.put("강동역", 강동역);
+                    values.put("길동역", 길동역);
+
+                }),
+                dynamicTest("지하철 노선 추가", () -> {
+                    Long 천호역 = values.get("천호역");
+                    Long 강동역 = values.get("강동역");
+
+                    Long lineId = 지하철_노선_생성_요청(LineRequest.builder()
+                            .name("5호선")
+                            .color(LineColor.PURPLE)
+                            .distance(5)
+                            .upStationId(천호역)
+                            .downStationId(강동역)
+                            .build()).jsonPath().getLong("id");
+
+                    values.put("lineId", lineId);
+                }),
+                dynamicTest("지하철 구간 추가", () -> {
+                    Long lineId = values.get("lineId");
+                    Long 강동역 = values.get("강동역");
+                    Long 길동역 = values.get("길동역");
+
+                    지하철_구간_추가_요청(lineId, new SectionRequest(강동역, 길동역, 10));
+                }),
+                dynamicTest("지하철 구간 제거", () -> {
+                    Long lineId = values.get("lineId");
+                    Long 강동역 = values.get("강동역");
+                    지하철_구간_제거_요청(lineId,강동역);
+                }),
+                dynamicTest("지하철 구간 조회", () -> {
+                    Long lineId = values.get("lineId");
+
+                    List<StationResponse> stations = 지하철_노선_조회_요청(lineId).jsonPath().getList("stations", StationResponse.class);
+
+                    assertAll(
+                            () -> assertThat(stations).hasSize(2),
+                            () -> assertThat(stations.stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("천호역", "길동역")
+                    );
+                })
+
+        );
+    }
+
+    @DisplayName("첫번째 구간을 제거한다")
+    @TestFactory
+    Stream<DynamicTest> removeFirstSection() {
+        HashMap<String, Long> values = new HashMap<>();
+        return Stream.of(
+                dynamicTest("지하철 역 추가", () -> {
+                    Long 천호역 = 지하철_역_생성_요청(StationRequest.builder().name("천호역").build())
+                            .jsonPath().getLong("id");
+                    Long 강동역 = 지하철_역_생성_요청(StationRequest.builder().name("강동역").build())
+                            .jsonPath().getLong("id");
+                    Long 길동역 = 지하철_역_생성_요청(StationRequest.builder().name("길동역").build())
+                            .jsonPath().getLong("id");
+                    values.put("천호역", 천호역);
+                    values.put("강동역", 강동역);
+                    values.put("길동역", 길동역);
+
+                }),
+                dynamicTest("지하철 노선 추가", () -> {
+                    Long 천호역 = values.get("천호역");
+                    Long 강동역 = values.get("강동역");
+
+                    Long lineId = 지하철_노선_생성_요청(LineRequest.builder()
+                            .name("5호선")
+                            .color(LineColor.PURPLE)
+                            .distance(5)
+                            .upStationId(천호역)
+                            .downStationId(강동역)
+                            .build()).jsonPath().getLong("id");
+
+                    values.put("lineId", lineId);
+                }),
+                dynamicTest("지하철 구간 추가", () -> {
+                    Long lineId = values.get("lineId");
+                    Long 강동역 = values.get("강동역");
+                    Long 길동역 = values.get("길동역");
+
+                    지하철_구간_추가_요청(lineId, new SectionRequest(강동역, 길동역, 10));
+                }),
+                dynamicTest("지하철 구간 제거", () -> {
+                    Long lineId = values.get("lineId");
+                    Long 천호역 = values.get("천호역");
+                    지하철_구간_제거_요청(lineId,천호역);
+                }),
+                dynamicTest("지하철 구간 조회", () -> {
+                    Long lineId = values.get("lineId");
+
+                    List<StationResponse> stations = 지하철_노선_조회_요청(lineId).jsonPath().getList("stations", StationResponse.class);
+
+                    assertAll(
+                            () -> assertThat(stations).hasSize(2),
+                            () -> assertThat(stations.stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("강동역", "길동역")
+                    );
+                })
+
+        );
+    }
+
+    @DisplayName("마지막 구간을 제거한다")
+    @TestFactory
+    Stream<DynamicTest> removeLastSection() {
+        HashMap<String, Long> values = new HashMap<>();
+        return Stream.of(
+                dynamicTest("지하철 역 추가", () -> {
+                    Long 천호역 = 지하철_역_생성_요청(StationRequest.builder().name("천호역").build())
+                            .jsonPath().getLong("id");
+                    Long 강동역 = 지하철_역_생성_요청(StationRequest.builder().name("강동역").build())
+                            .jsonPath().getLong("id");
+                    Long 길동역 = 지하철_역_생성_요청(StationRequest.builder().name("길동역").build())
+                            .jsonPath().getLong("id");
+                    values.put("천호역", 천호역);
+                    values.put("강동역", 강동역);
+                    values.put("길동역", 길동역);
+
+                }),
+                dynamicTest("지하철 노선 추가", () -> {
+                    Long 천호역 = values.get("천호역");
+                    Long 강동역 = values.get("강동역");
+
+                    Long lineId = 지하철_노선_생성_요청(LineRequest.builder()
+                            .name("5호선")
+                            .color(LineColor.PURPLE)
+                            .distance(5)
+                            .upStationId(천호역)
+                            .downStationId(강동역)
+                            .build()).jsonPath().getLong("id");
+
+                    values.put("lineId", lineId);
+                }),
+                dynamicTest("지하철 구간 추가", () -> {
+                    Long lineId = values.get("lineId");
+                    Long 강동역 = values.get("강동역");
+                    Long 길동역 = values.get("길동역");
+
+                    지하철_구간_추가_요청(lineId, new SectionRequest(강동역, 길동역, 10));
+                }),
+                dynamicTest("지하철 구간 제거", () -> {
+                    Long lineId = values.get("lineId");
+                    Long 길동역 = values.get("길동역");
+                    지하철_구간_제거_요청(lineId,길동역);
+                }),
+                dynamicTest("지하철 구간 조회", () -> {
+                    Long lineId = values.get("lineId");
+
+                    List<StationResponse> stations = 지하철_노선_조회_요청(lineId).jsonPath().getList("stations", StationResponse.class);
+
+                    assertAll(
+                            () -> assertThat(stations).hasSize(2),
+                            () -> assertThat(stations.stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("천호역", "강동역")
+                    );
+                })
+
+        );
+    }
+
+    public static ExtractableResponse<Response> 지하철_구간_제거_요청(Long lineId,Long stationId) {
+        return RestAssured
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("stationId",stationId)
+                .when().delete("/lines/{lineId}/sections", lineId)
+                .then().log().all()
+                .extract();
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
