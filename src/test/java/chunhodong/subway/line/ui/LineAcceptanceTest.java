@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
-@DisplayName("Line기능")
+@DisplayName("Line 인수테스트")
 public class LineAcceptanceTest extends AcceptanceTest {
 
 

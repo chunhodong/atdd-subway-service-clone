@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@DisplayName("Station 인수테스트")
 public class StationControllerTest extends AcceptanceTest {
 
     @DisplayName("지하철 역을 생성한다")
