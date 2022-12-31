@@ -1,11 +1,12 @@
 package chunhodong.subway.auth.application;
 
-import nextstep.subway.auth.domain.LoginMember;
-import nextstep.subway.auth.dto.TokenRequest;
-import nextstep.subway.auth.dto.TokenResponse;
-import nextstep.subway.auth.infrastructure.JwtTokenProvider;
-import nextstep.subway.member.domain.Member;
-import nextstep.subway.member.domain.MemberRepository;
+
+import chunhodong.subway.auth.domain.LoginMember;
+import chunhodong.subway.auth.dto.TokenRequest;
+import chunhodong.subway.auth.dto.TokenResponse;
+import chunhodong.subway.auth.infrastructure.JwtTokenProvider;
+import chunhodong.subway.member.domain.Member;
+import chunhodong.subway.member.domain.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

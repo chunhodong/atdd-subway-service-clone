@@ -1,8 +1,9 @@
 package chunhodong.subway.auth.ui;
 
-import nextstep.subway.auth.application.AuthService;
-import nextstep.subway.auth.dto.TokenRequest;
-import nextstep.subway.auth.dto.TokenResponse;
+
+import chunhodong.subway.auth.application.AuthService;
+import chunhodong.subway.auth.dto.TokenRequest;
+import chunhodong.subway.auth.dto.TokenResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

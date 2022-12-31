@@ -1,7 +1,8 @@
 package chunhodong.subway.auth.infrastructure;
 
-import nextstep.subway.auth.application.AuthService;
-import nextstep.subway.auth.ui.AuthenticationPrincipalArgumentResolver;
+
+import chunhodong.subway.auth.application.AuthService;
+import chunhodong.subway.auth.ui.AuthenticationPrincipalArgumentResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
