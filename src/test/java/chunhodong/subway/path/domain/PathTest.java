@@ -5,15 +5,17 @@ import chunhodong.subway.line.domain.LineColor;
 import chunhodong.subway.line.domain.Section;
 import chunhodong.subway.path.exception.PathException;
 import chunhodong.subway.station.domain.Station;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.jgrapht.GraphPath;
+import org.junit.jupiter.api.*;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Path 도메인테스트")
 public class PathTest {
@@ -71,7 +73,7 @@ public class PathTest {
             void throwsException() {
                 assertThatThrownBy(() -> {
                     new PathFinder(List.of(line))
-                            .getShortestPath(Station.of("강남역"),Station.of("삼성역"));
+                            .getShortestPath(Station.of("강남역"), Station.of("삼성역"));
                 }).isInstanceOf(PathException.class)
                         .hasMessageContaining("경로에 역이 존재하지 않습니다");
 
@@ -100,11 +102,65 @@ public class PathTest {
             void throwsException() {
                 assertThatThrownBy(() -> {
                     new PathFinder(List.of(line))
-                            .getShortestPath(Station.of("강남역"),Station.of("강남역"));
+                            .getShortestPath(Station.of("강남역"), Station.of("강남역"));
                 }).isInstanceOf(PathException.class)
                         .hasMessageContaining("동일한 역 입니다");
 
             }
+        }
+
+        @TestFactory
+        @DisplayName("노선중에서 가장 짦은 역들을 반환")
+        Stream<DynamicTest> findShortestPath() {
+            Section 송파구간 = Section.builder().upStation(Station.of("송파")).downStation(Station.of("가락시장")).distance(10).build();
+            Line 칠호선 = Line.builder().name("칠호선").color(LineColor.RED).section(송파구간).build();
+
+            Section 도곡대치구간 = Section.builder().upStation(Station.of("도곡")).downStation(Station.of("대치")).distance(10).build();
+            Line 삼호선 = Line.builder().name("삼호선").color(LineColor.PURPLE).section(도곡대치구간).build();
+
+            Section 도곡구룡구간 = Section.builder().upStation(Station.of("도곡")).downStation(Station.of("구룡")).distance(10).build();
+            Line 분당선 = Line.builder().name("분당선").color(LineColor.BLUE).section(도곡구룡구간).build();
+            HashMap<String, Station> 지하철역 = new HashMap<>();
+            return Stream.of(
+                    DynamicTest.dynamicTest("역 생성", () -> {
+                        지하철역.put("대치", Station.of("대치"));
+                        지하철역.put("학여울", Station.of("학여울"));
+                        지하철역.put("대청", Station.of("대청"));
+                        지하철역.put("일원", Station.of("일원"));
+                        지하철역.put("수서", Station.of("수서"));
+                        지하철역.put("가락시장", Station.of("가락시장"));
+                        지하철역.put("구룡", Station.of("구룡"));
+                        지하철역.put("개포동", Station.of("개포동"));
+                        지하철역.put("대모산입구", Station.of("대모산입구"));
+                    }),
+                    DynamicTest.dynamicTest("구간추가", () -> {
+                        삼호선.addSection(Section.builder().upStation(지하철역.get("대치")).downStation(지하철역.get("학여울")).distance(3).build());
+                        삼호선.addSection(Section.builder().upStation(지하철역.get("학여울")).downStation(지하철역.get("대청")).distance(3).build());
+                        삼호선.addSection(Section.builder().upStation(지하철역.get("대청")).downStation(지하철역.get("일원")).distance(3).build());
+                        삼호선.addSection(Section.builder().upStation(지하철역.get("일원")).downStation(지하철역.get("수서")).distance(3).build());
+                        삼호선.addSection(Section.builder().upStation(지하철역.get("수서")).downStation(지하철역.get("가락시장")).distance(3).build());
+
+                        분당선.addSection(Section.builder().upStation(지하철역.get("구룡")).downStation(지하철역.get("개포동")).distance(1).build());
+                        분당선.addSection(Section.builder().upStation(지하철역.get("개포동")).downStation(지하철역.get("대모산입구")).distance(1).build());
+                        분당선.addSection(Section.builder().upStation(지하철역.get("대모산입구")).downStation(지하철역.get("수서")).distance(1).build());
+
+                    }),
+                    DynamicTest.dynamicTest("최단거리조회", () -> {
+                        GraphPath<Station, SectionEdge> path = new PathFinder(List.of(칠호선, 삼호선, 분당선))
+                                .getShortestPath(Station.of("도곡"), Station.of("가락시장"));
+                        List<Station> stations = path.getVertexList();
+
+                        assertAll(
+                                () -> assertThat(stations).hasSize(6),
+                                () -> assertThat(stations).containsExactly(
+                                        Station.of("도곡"),
+                                        Station.of("구룡"),
+                                        Station.of("개포동"),
+                                        Station.of("대모산입구"),
+                                        Station.of("수서"),
+                                        Station.of("가락시장")));
+
+                    }));
         }
     }
 
