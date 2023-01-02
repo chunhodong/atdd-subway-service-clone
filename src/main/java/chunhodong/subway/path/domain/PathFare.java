@@ -2,7 +2,7 @@ package chunhodong.subway.path.domain;
 
 public class PathFare {
     private int distance;
-    private int age;
+    private Integer age;
     private int lineFare;
 
     public PathFare(int lineFare, int distance, Integer age) {

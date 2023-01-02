@@ -169,37 +169,135 @@ public class PathTest {
     @DisplayName("요금조회는")
     class DescribeFindFare {
         @Nested
-        @DisplayName("거리가 10km이내면 기본운임1250원")
+        @DisplayName("거리가 10km이내면 기본운임1250원에서")
         class ContextWithLessThen10 {
             @Test
+            @DisplayName("로그인을 안한경우 노선별 요금만 추가")
             void returnBaseFare() {
                 int distance = Arbitraries.integers().between(0, 10).sample();
+                Line lineFare = Line.builder().name("3호선").color(LineColor.RED).fare(1000).build();
 
-                assertThat(new DistanceFare(distance).getFare()).isEqualTo(1250);
+                int fare = new PathFare(lineFare.getFare(), distance, null).getFare();
+
+                assertThat(fare).isEqualTo(2250);
+            }
+
+            @Nested
+            @DisplayName("로그인한경우 ")
+            class AtLogin {
+                @Test
+                @DisplayName("13세이상 19세 미만청소년이면 350원 공제한 금액에 20프로할인")
+                void discount20AtTeen() {
+                    int distance = Arbitraries.integers().between(0, 10).sample();
+                    Line lineFare = Line.builder().name("3호선").color(LineColor.RED).fare(1100).build();
+                    int age = Arbitraries.integers().between(13, 18).sample();
+
+                    int fare = new PathFare(lineFare.getFare(), distance, age).getFare();
+
+                    assertThat(fare).isEqualTo(1600);
+                }
+
+                @Test
+                @DisplayName("6세이상 13세미만 어린이면 350원 공제한 금액에 20프로할인")
+                void discount20AtKids() {
+                    int distance = Arbitraries.integers().between(0, 10).sample();
+                    Line lineFare = Line.builder().name("3호선").color(LineColor.RED).fare(1100).build();
+                    int age = Arbitraries.integers().between(6, 13).sample();
+
+                    int fare = new PathFare(lineFare.getFare(), distance, age).getFare();
+
+                    assertThat(fare).isEqualTo(1000);
+                }
             }
         }
 
         @Nested
-        @DisplayName("거리가 10km초과부터 50km까지 5km마다 100원씩 기본요금에 추가")
+        @DisplayName("거리가 10km초과부터 50km까지 5km마다 100원씩 기본요금에 추가에서")
         class ContextWithGreaterThan10LessThen50 {
             @Test
+            @DisplayName("로그인을 안한경우 노선별 요금만 추가")
             void returnBaseFare() {
                 int distance = Arbitraries.integers().between(10, 50).sample();
                 int extraFee = (int) ((Math.floor(((distance - 10) - 1) / 5.0) + 1) * 100);
 
                 assertThat(new DistanceFare(distance).getFare()).isEqualTo(1250 + extraFee);
             }
+
+            @Nested
+            @DisplayName("로그인한경우 ")
+            class AtLogin {
+                @Test
+                @DisplayName("13세이상 19세 미만청소년이면 350원 공제한 금액에 20프로할인")
+                void discount20AtTeen() {
+                    int distance = Arbitraries.integers().between(10, 50).sample();
+                    int distanceFare = new DistanceFare(distance).getFare();
+                    int lineFare = Line.builder().name("3호선").color(LineColor.RED).fare(1000).build().getFare();
+                    int age = Arbitraries.integers().between(13, 18).sample();
+
+                    int fare = new PathFare(lineFare, distance, age).getFare();
+
+                    int resultFare = (int) (( distanceFare + lineFare - 350) * 0.8);
+                    assertThat(fare).isEqualTo(resultFare);
+                }
+
+                @Test
+                @DisplayName("6세이상 13세미만 어린이면 350원 공제한 금액에 50프로할인")
+                void discount20AtKids() {
+                    int distance = Arbitraries.integers().between(10, 50).sample();
+                    int distanceFare = new DistanceFare(distance).getFare();
+                    int lineFare = Line.builder().name("3호선").color(LineColor.RED).fare(1000).build().getFare();
+                    int age = Arbitraries.integers().between(6, 12).sample();
+
+                    int fare = new PathFare(lineFare, distance, age).getFare();
+
+                    int resultFare = (int) (( distanceFare + lineFare - 350) * 0.5);
+                    assertThat(fare).isEqualTo(resultFare);
+                }
+            }
         }
 
         @Nested
-        @DisplayName("거리가 50km초과부터 8km마다 100원씩 기본요금에 추가")
-        class ContextWithGreaterThan50{
+        @DisplayName("거리가 50km초과부터 8km마다 100원씩 기본요금에 추가에서")
+        class ContextWithGreaterThan50 {
             @Test
+            @DisplayName("로그인을 안한경우 노선별 요금만 추가")
             void returnBaseFare() {
                 int distance = Arbitraries.integers().greaterOrEqual(51).sample();
                 int extraFee = (int) ((Math.floor(((distance - 50) - 1) / 8.0) + 1) * 100);
 
                 assertThat(new DistanceFare(distance).getFare()).isEqualTo(1250 + extraFee);
+            }
+
+            @Nested
+            @DisplayName("로그인한경우 ")
+            class AtLogin {
+                @Test
+                @DisplayName("13세이상 19세 미만청소년이면 350원 공제한 금액에 20프로할인")
+                void discount20AtTeen() {
+                    int distance = Arbitraries.integers().greaterOrEqual(51).sample();
+                    int distanceFare = new DistanceFare(distance).getFare();
+                    int lineFare = Line.builder().name("3호선").color(LineColor.RED).fare(1000).build().getFare();
+                    int age = Arbitraries.integers().between(13, 18).sample();
+
+                    int fare = new PathFare(lineFare, distance, age).getFare();
+
+                    int resultFare = (int) (( distanceFare + lineFare - 350) * 0.8);
+                    assertThat(fare).isEqualTo(resultFare);
+                }
+
+                @Test
+                @DisplayName("6세이상 13세미만 어린이면 350원 공제한 금액에 50프로할인")
+                void discount20AtKids() {
+                    int distance = Arbitraries.integers().greaterOrEqual(51).sample();
+                    int distanceFare = new DistanceFare(distance).getFare();
+                    int lineFare = Line.builder().name("3호선").color(LineColor.RED).fare(1000).build().getFare();
+                    int age = Arbitraries.integers().between(6, 12).sample();
+
+                    int fare = new PathFare(lineFare, distance, age).getFare();
+
+                    int resultFare = (int) (( distanceFare + lineFare - 350) * 0.5);
+                    assertThat(fare).isEqualTo(resultFare);
+                }
             }
         }
 
