@@ -11,4 +11,8 @@ public class SectionEdge extends DefaultWeightedEdge {
         this.section = section;
         this.lineId = lineId;
     }
+
+    public Long getLineId() {
+        return lineId;
+    }
 }

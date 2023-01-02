@@ -164,4 +164,19 @@ public class PathTest {
         }
     }
 
+    @Nested
+    @DisplayName("요금조회는")
+    class DescribeFindFare {
+        @Nested
+        @DisplayName("거리가 10km이내면 기본운임1250원")
+        class ContextWithLessThen10 {
+            @Test
+            void returnBaseFare() {
+                assertThat(new DistanceFare(5).getFare()).isEqualTo(1250);
+            }
+        }
+
+    }
+
+
 }

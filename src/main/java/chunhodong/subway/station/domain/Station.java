@@ -18,7 +18,7 @@ public class Station extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
-    protected Station() {
+    public Station() {
 
     }
 

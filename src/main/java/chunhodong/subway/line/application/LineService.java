@@ -52,6 +52,19 @@ public class LineService {
                 .map(LineResponse::of).collect(Collectors.toList());
     }
 
+    private List<Line> findLines(List<Long> lineIds) {
+        return lineRepository.findAllById(lineIds)
+                .stream()
+                .collect(Collectors.toList());
+    }
+
+    public int findMaxFare(List<Long> lineIds) {
+        return findLines(lineIds)
+                .stream()
+                .mapToInt(value -> value.getFare())
+                .max().orElse(0);
+    }
+
     @Transactional
     public void addSection(Long lineId, SectionRequest request) {
         Line line = findLineById(lineId);

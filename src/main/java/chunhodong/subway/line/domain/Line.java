@@ -24,6 +24,7 @@ public class Line extends BaseEntity {
     private LineColor color;
     @Embedded
     private Sections sections = new Sections();
+    private int fare;
 
     protected Line() {
     }
@@ -33,6 +34,7 @@ public class Line extends BaseEntity {
         this.id = builder.id;
         this.name = builder.name;
         this.color = builder.color;
+        this.fare = builder.fare;
         this.sections = Objects.isNull(builder.section) ? this.sections : new Sections(Section.builder()
                 .line(this)
                 .upStation(builder.section.getUpStation())
@@ -75,6 +77,7 @@ public class Line extends BaseEntity {
         private String name;
         private LineColor color;
         private Section section;
+        private int fare;
 
         public LineBuilder id(Long id) {
             this.id = id;
@@ -88,6 +91,11 @@ public class Line extends BaseEntity {
 
         public LineBuilder color(LineColor color) {
             this.color = color;
+            return this;
+        }
+
+        public LineBuilder fare(int fare) {
+            this.fare = fare;
             return this;
         }
 
