@@ -5,6 +5,7 @@ import chunhodong.subway.line.domain.LineColor;
 import chunhodong.subway.line.domain.Section;
 import chunhodong.subway.path.exception.PathException;
 import chunhodong.subway.station.domain.Station;
+import net.jqwik.api.Arbitraries;
 import org.jgrapht.GraphPath;
 import org.junit.jupiter.api.*;
 
@@ -172,7 +173,33 @@ public class PathTest {
         class ContextWithLessThen10 {
             @Test
             void returnBaseFare() {
-                assertThat(new DistanceFare(5).getFare()).isEqualTo(1250);
+                int distance = Arbitraries.integers().between(0, 10).sample();
+
+                assertThat(new DistanceFare(distance).getFare()).isEqualTo(1250);
+            }
+        }
+
+        @Nested
+        @DisplayName("거리가 10km초과부터 50km까지 5km마다 100원씩 기본요금에 추가")
+        class ContextWithGreaterThan10LessThen50 {
+            @Test
+            void returnBaseFare() {
+                int distance = Arbitraries.integers().between(10, 50).sample();
+                int extraFee = (int) ((Math.floor(((distance - 10) - 1) / 5.0) + 1) * 100);
+
+                assertThat(new DistanceFare(distance).getFare()).isEqualTo(1250 + extraFee);
+            }
+        }
+
+        @Nested
+        @DisplayName("거리가 50km초과부터 8km마다 100원씩 기본요금에 추가")
+        class ContextWithGreaterThan50{
+            @Test
+            void returnBaseFare() {
+                int distance = Arbitraries.integers().greaterOrEqual(51).sample();
+                int extraFee = (int) ((Math.floor(((distance - 50) - 1) / 8.0) + 1) * 100);
+
+                assertThat(new DistanceFare(distance).getFare()).isEqualTo(1250 + extraFee);
             }
         }
 
