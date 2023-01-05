@@ -2,4 +2,7 @@ rootProject.name = 'subway'
 include 'subway-station'
 include 'subway-common'
 include 'subway-member'
+include 'subway-line'
+include 'subway-path'
+include 'subway-auth'
 

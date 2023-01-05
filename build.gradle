@@ -68,7 +68,9 @@ allprojects {
 		implementation project(':subway-station')
 		implementation project(':subway-common')
 		implementation project(':subway-member')
-
+		implementation project(':subway-line')
+		implementation project(':subway-path')
+		implementation project(':subway-auth')
 
 	}
 

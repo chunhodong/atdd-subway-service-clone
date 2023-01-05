@@ -8,7 +8,6 @@ import chunhodong.subway.auth.infrastructure.JwtTokenProvider;
 import chunhodong.subway.member.domain.Member;
 import chunhodong.subway.member.domain.MemberRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {
