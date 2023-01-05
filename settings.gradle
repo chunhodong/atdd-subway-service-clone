@@ -1,4 +1,5 @@
 rootProject.name = 'subway'
 include 'subway-station'
 include 'subway-common'
+include 'subway-member'
 

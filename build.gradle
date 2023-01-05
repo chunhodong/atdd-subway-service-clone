@@ -67,6 +67,8 @@ allprojects {
 		testImplementation 'net.jqwik:jqwik:1.7.0'
 		implementation project(':subway-station')
 		implementation project(':subway-common')
+		implementation project(':subway-member')
+
 
 	}
 
