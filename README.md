@@ -1,5 +1,5 @@
 ### 지하철 노선도 프로젝트
-[ATDD 강의](https://edu.nextstep.camp/c/R89PYi5H) 실습을 위한 지하철 노선도 애플리케이션의 클론 프로젝트입니다
+[ATDD 미션](https://github.com/next-step/atdd-subway-service) 실습을 위한 지하철 노선도 애플리케이션의 클론 프로젝트입니다
 <br><br>
 미션수행기간 피드백받았는 부분을 개선하여 다시 구현해보았습니다
 
