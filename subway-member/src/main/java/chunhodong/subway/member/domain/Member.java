@@ -2,6 +2,7 @@ package chunhodong.subway.member.domain;
 
 import chunhodong.subway.auth.application.AuthorizationException;
 import chunhodong.subway.common.BaseEntity;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Entity;
@@ -10,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
+@Getter
 public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,29 +28,11 @@ public class Member extends BaseEntity {
         this.password = password;
         this.age = age;
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
     public void update(Member member) {
         this.email = member.email;
         this.password = member.password;
         this.age = member.age;
     }
-
     public void checkPassword(String password) {
         if (!StringUtils.equals(this.password, password)) {
             throw new AuthorizationException();
