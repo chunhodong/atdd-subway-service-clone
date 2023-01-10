@@ -75,12 +75,27 @@ allprojects {
 
 }
 
-/*
+project(':subway-member') {
+	dependencies {
+		implementation project(':subway-common')
+		implementation project(':subway-auth')
+	}
+}
 
-group = 'chunhodong'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
-*/
+project(':subway-line') {
+	dependencies {
+		implementation project(':subway-common')
+		implementation project(':subway-station')
+	}
+}
+
+project(':subway-path') {
+	dependencies {
+		implementation project(':subway-common')
+		implementation project(':subway-line')
+		implementation project(':subway-station')
+	}
+}
 
 
 
