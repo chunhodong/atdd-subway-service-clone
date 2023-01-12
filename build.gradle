@@ -57,6 +57,11 @@ allprojects {
 		implementation 'mysql:mysql-connector-java'
 		// rest-assured
 		testImplementation 'io.rest-assured:rest-assured:3.3.0'
+		// jwt
+		implementation 'io.jsonwebtoken:jjwt:0.9.1'
+		// test
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		testImplementation 'net.jqwik:jqwik:1.7.0'
 	}
 
 	tasks.named('test') {
@@ -69,7 +74,8 @@ allprojects {
 project(':subway-member') {
 	dependencies {
 		implementation project(':subway-common')
-		implementation project(':subway-auth')
+
+		testImplementation project(':subway-common').sourceSets.test.output
 	}
 }
 
@@ -77,6 +83,9 @@ project(':subway-line') {
 	dependencies {
 		implementation project(':subway-common')
 		implementation project(':subway-station')
+
+		testImplementation project(':subway-common').sourceSets.test.output
+		testImplementation project(':subway-station').sourceSets.test.output
 	}
 }
 
@@ -85,12 +94,22 @@ project(':subway-path') {
 		implementation project(':subway-common')
 		implementation project(':subway-line')
 		implementation project(':subway-station')
+		implementation project(':subway-auth')
+
+		testImplementation project(':subway-common').sourceSets.test.output
 	}
 }
 
 project(':subway-station') {
 	dependencies {
 		implementation project(':subway-common')
+
+		testImplementation project(':subway-common').sourceSets.test.output
 	}
 }
 
+project(':subway-auth') {
+	dependencies {
+		implementation project(':subway-member')
+	}
+}

@@ -1,6 +1,5 @@
 package chunhodong.subway.member.domain;
 
-import chunhodong.subway.auth.application.AuthorizationException;
 import chunhodong.subway.common.BaseEntity;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
@@ -28,14 +27,20 @@ public class Member extends BaseEntity {
         this.password = password;
         this.age = age;
     }
+
     public void update(Member member) {
         this.email = member.email;
         this.password = member.password;
         this.age = member.age;
     }
+
     public void checkPassword(String password) {
         if (!StringUtils.equals(this.password, password)) {
-            throw new AuthorizationException();
+            throw new RuntimeException();
         }
+    }
+
+    public void tx(){
+
     }
 }

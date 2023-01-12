@@ -1,17 +1,18 @@
 package chunhodong.subway.line.ui;
 
 import chunhodong.subway.AcceptanceTest;
-import chunhodong.subway.line.domain.Line;
 import chunhodong.subway.line.domain.LineColor;
 import chunhodong.subway.line.dto.LineRequest;
 import chunhodong.subway.line.dto.SectionRequest;
-import chunhodong.subway.line.exception.LineException;
 import chunhodong.subway.station.dto.StationRequest;
 import chunhodong.subway.station.dto.StationResponse;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -21,14 +22,11 @@ import java.util.stream.Stream;
 
 import static chunhodong.subway.station.StationControllerTest.지하철_역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 @DisplayName("Line 인수테스트")
 public class LineAcceptanceTest extends AcceptanceTest {
-
-
     @Nested
     @DisplayName("구간추가에서 ")
     class DescribeAddSection {
@@ -83,6 +81,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
             );
         }
+
         @DisplayName("새로 추가하는 구간의 상행선이 기존과 일치하는 경우 기존구간이 나누어진다")
         @TestFactory
         Stream<DynamicTest> addWithSameUpStation() {
@@ -134,6 +133,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
             );
         }
+
         @DisplayName("새로 추가하는 구간이 가장 앞쪽인 경우 새롭게 추가")
         @TestFactory
         Stream<DynamicTest> addFirstSection() {
@@ -180,6 +180,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
             );
         }
+
         @DisplayName("새로 추가하는 구간이 가장 뒤쪽인 경우 새롭게 추가")
         @TestFactory
         Stream<DynamicTest> addLastSection() {
@@ -230,7 +231,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     @Nested
     @DisplayName("구간제거에서 ")
-    class DescribeRemoveSection{
+    class DescribeRemoveSection {
         @DisplayName("중간 겹치는 역을 제거하는경우 기존 구간에서 남아있는 역들이 하나로 합쳐진다")
         @TestFactory
         Stream<DynamicTest> removeMiddleSection() {
@@ -272,7 +273,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     dynamicTest("지하철 구간 제거", () -> {
                         Long lineId = values.get("lineId");
                         Long 강동역 = values.get("강동역");
-                        지하철_구간_제거_요청(lineId,강동역);
+                        지하철_구간_제거_요청(lineId, 강동역);
                     }),
                     dynamicTest("지하철 구간 조회", () -> {
                         Long lineId = values.get("lineId");
@@ -329,7 +330,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     dynamicTest("지하철 구간 제거", () -> {
                         Long lineId = values.get("lineId");
                         Long 천호역 = values.get("천호역");
-                        지하철_구간_제거_요청(lineId,천호역);
+                        지하철_구간_제거_요청(lineId, 천호역);
                     }),
                     dynamicTest("지하철 구간 조회", () -> {
                         Long lineId = values.get("lineId");
@@ -386,7 +387,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                     dynamicTest("지하철 구간 제거", () -> {
                         Long lineId = values.get("lineId");
                         Long 길동역 = values.get("길동역");
-                        지하철_구간_제거_요청(lineId,길동역);
+                        지하철_구간_제거_요청(lineId, 길동역);
                     }),
                     dynamicTest("지하철 구간 조회", () -> {
                         Long lineId = values.get("lineId");
@@ -403,11 +404,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
         }
     }
 
-    public static ExtractableResponse<Response> 지하철_구간_제거_요청(Long lineId,Long stationId) {
+    public static ExtractableResponse<Response> 지하철_구간_제거_요청(Long lineId, Long stationId) {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .param("stationId",stationId)
+                .param("stationId", stationId)
                 .when().delete("/lines/{lineId}/sections", lineId)
                 .then().log().all()
                 .extract();
