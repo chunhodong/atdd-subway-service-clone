@@ -1,6 +1,6 @@
 package chunhodong.subway.member.domain;
 
-import chunhodong.subway.auth.application.AuthorizationException;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +13,6 @@ public class MemberTest {
     @Test
     void throwsExceptionWhenInvalidPassword() {
         Member member = new Member("test@test.com", "password", 25);
-        assertThatThrownBy(() -> member.checkPassword("cmwe")).isInstanceOf(AuthorizationException.class);
+        assertThatThrownBy(() -> member.checkPassword("cmwe")).isInstanceOf(RuntimeException.class);
     }
 }

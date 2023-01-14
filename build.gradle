@@ -110,6 +110,7 @@ project(':subway-station') {
 
 project(':subway-auth') {
 	dependencies {
+		implementation project(':subway-common')
 		implementation project(':subway-member')
 	}
 }
